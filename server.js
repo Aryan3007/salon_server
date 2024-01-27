@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import reviewRouter from "./routes/reviewroute.js";
 import servicesRouter from "./routes/servicesRouter.js";
+import authRouter from "./routes/authRoute.js";
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ connectDB()
 
 app.use('/review', reviewRouter)
 app.use('/services', servicesRouter)
+app.use('/auth', authRouter)
+app.use('/status', authRouter)
 
 const PORT=process.env.PORT
 

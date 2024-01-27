@@ -1,3 +1,4 @@
+import appointmentModel from "../models/appointment.model.js"
 import reviewModel from "../models/review.model.js"
 import serviceModel from "../models/service.model.js"
 
@@ -22,6 +23,34 @@ export const postServicesController = async(req, res)=>{
         })
     }
 }
+
+export const appointmentsController = async (req, res) => {
+    try {
+        const { name, email, mobile, address, dateTime, price } = req.body;
+        const newAppointment = new appointmentModel({
+            name,
+            email,
+            mobile,
+            address,
+            dateTime,
+            price
+        });
+
+        await newAppointment.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Appointment submitted",
+            newAppointment
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server error in appointment"
+        });
+    }
+};
+
 export const getServicesController = async (req, res) => {
     try {
         const allServices = await serviceModel.find({});
