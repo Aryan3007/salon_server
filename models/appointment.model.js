@@ -15,17 +15,33 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
     },
     address: {
-        type: String,
-        required: true,
-      },
-      dateTime: {
-        type: String,
-        required: true,
-      },
-    price:{
-      type : Number ,
-      required:true
-    }
+      type: String,
+      required: true,
+    },
+    date: {
+      type: String,
+      // required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    order_id:{
+      type:String
+    },
+    razorpay_payment_id:{
+      type:String,
+      default:null
+    },
+    razorpay_order_id:{
+      type:String,
+      default:null
+    },
+     razorpay_signature:{
+      type:String,
+      default:null
+    },
+    
   },
   { timestamps: true }
 );
