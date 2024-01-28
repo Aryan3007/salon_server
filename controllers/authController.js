@@ -125,14 +125,14 @@ export const paymentStatus = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Payment Successful",
-        redirectUrlscc: "http://localhost:5173/appointment",
+        redirectUrlscc: "https://salon-client-ten.vercel.app/appointment",
       });
     } else {
       // Payment failed, send failure response to client
       res.status(200).json({
         success: false,
         message: "Payment Failed",
-        redirectUrlfail: "http://localhost:5173/failure",
+        redirectUrlfail: "https://salon-client-ten.vercel.app/failure",
       });
     }
   } catch (error) {
