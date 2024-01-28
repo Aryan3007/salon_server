@@ -69,3 +69,23 @@ export const getServicesController = async (req, res) => {
         });
     }
 };
+
+
+
+export const allAppointmentsController = async (req, res) => {
+    try {
+        
+        const allappointments = await appointmentModel.find()
+
+        res.status(200).json({
+            success: true,
+            message: "Appointment founded",
+            allappointments
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server error in appointment"
+        });
+    }
+};
