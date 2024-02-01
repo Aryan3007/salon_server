@@ -1,6 +1,7 @@
 import appointmentModel from "../models/appointment.model.js"
-import reviewModel from "../models/review.model.js"
+// import reviewModel from "../models/review.model.js"
 import serviceModel from "../models/service.model.js"
+import userModel from "../models/user.model.js"
 
 export const postServicesController = async(req, res)=>{
     try {
@@ -71,21 +72,80 @@ export const getServicesController = async (req, res) => {
 };
 
 
-
-export const allAppointmentsController = async (req, res) => {
+export const AppointmentsController = async (req, res) => {
     try {
-        
-        const allappointments = await appointmentModel.find()
-
-        res.status(200).json({
-            success: true,
-            message: "Appointment founded",
-            allappointments
+      const { userId } = req.query;
+  
+      const user = await userModel.findById(userId).populate('appointments');
+  
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
         });
+      }
+  
+      // Filter appointments where razorpay_payment_id, razorpay_order_id, and razorpay_signature are not null
+      const filteredAppointments = user.appointments.filter(
+        (appointment) =>
+          appointment.razorpay_payment_id !== null &&
+          appointment.razorpay_order_id !== null &&
+          appointment.razorpay_signature !== null
+      );
+  
+      res.status(200).json({
+        success: true,
+        message: "Filtered Appointments found",
+        appointments: filteredAppointments,
+      });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server error in appointment"
-        });
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Server error in appointments",
+      });
     }
-};
+  };
+  
+  
+  export const deleteAppointmentsController = async (req, res) => {
+    try {
+      const { userId } = req.query;
+  
+      const user = await userModel.findById(userId).populate('appointments');
+  
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+  
+      // Filter appointments with null values for razorpay_payment_id, razorpay_order_id, and razorpay_signature
+      const appointmentsToDelete = user.appointments.filter(
+        (appointment) =>
+          appointment.razorpay_payment_id === null &&
+          appointment.razorpay_order_id === null &&
+          appointment.razorpay_signature === null
+      );
+  
+      // Delete the filtered appointments
+      await Promise.all(
+        appointmentsToDelete.map(async (appointment) => {
+          await appointmentModel.deleteOne({ _id: appointment._id });
+        })
+      );
+  
+      res.status(200).json({
+        success: true,
+        message: "Appointments with null values deleted",
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Server error in appointments",
+      });
+    }
+  };
+  

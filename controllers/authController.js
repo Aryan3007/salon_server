@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
-import sha256 from "crypto-js/sha256.js";
-import axios from "axios"
+
+import appointmentModel from "../models/appointment.model.js";
 
 // register user controller
 export const registerController = async (req, res) => {
@@ -82,57 +82,25 @@ export const loginUserController = async (req, res) => {
   }
 };
 
-export const paymentStatus = async (req, res) => {
+export const appointmentStatus = async (req, res) => {
   try {
-    const data = req.body;
-    console.log(data);
+    const razorpayPaymentId = req.params.razorpayPaymentId; // Adjust the parameter name based on your actual implementation
+    // Find the appointment based on the Razorpay payment ID
+    console.log(razorpayPaymentId)
+    const result = await appointmentModel.findOne({
+      razorpay_payment_id: razorpayPaymentId,
+    });
 
-    const status = data.code;
-    const merchantId = data.merchantId;
-    const transactionId = data.transactionId;
-
-    console.log(status);
-    console.log(merchantId);
-    console.log(transactionId);
-
-    const st =
-      `/pg/v1/status/${merchantId}/${transactionId}` +
-      process.env.VITE_REACT_APP_SALT_KEY;
-    // console.log(st)
-    const dataSha256 = sha256(st);
-
-    const checksum =
-      dataSha256 + "###" + process.env.VITE_REACT_APP_SALT_INDEX;
-    console.log(checksum);
-
-    const options = {
-      method: "GET",
-      url: `https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/${merchantId}/${transactionId}`,
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-        "X-VERIFY": checksum,
-        "X-MERCHANT-ID": `${merchantId}`,
-      },
-    };
-
-    // CHECK PAYMENT STATUS
-    const response = await axios.request(options);
-    console.log("r===", response.data.code);
-
-    if (response.data.code === "PAYMENT_SUCCESS") {
-      // Payment successful, send success response to client
+    if (result) {
       res.status(200).json({
         success: true,
-        message: "Payment Successful",
-        redirectUrlscc: "https://salon-client-ten.vercel.app/success",
+        message: "Appointment found",
+        result,
       });
     } else {
-      // Payment failed, send failure response to client
-      res.status(200).json({
+      res.status(404).json({
         success: false,
-        message: "Payment Failed",
-        redirectUrlfail: "https://salon-client-ten.vercel.app/failure",
+        message: "Appointment not found",
       });
     }
   } catch (error) {
