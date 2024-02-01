@@ -115,6 +115,7 @@ app.post("/payment/payment-verification", async (req, res) => {
 
       res.status(200).json({
         success: true,
+        message:" your payment has been successfully done, If you are not redirected go back to home page"
       });
       return;
     } else {
