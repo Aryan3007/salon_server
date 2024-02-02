@@ -14,7 +14,7 @@ export const postServicesController = async(req, res)=>{
         await newServices.save()
         res.status(200).json({
             success:true,
-            message:"review submitted",
+            message:"service submitted",
             newServices
         })
     } catch (error) {
