@@ -92,7 +92,7 @@ app.post("/payment/payment-verification", async (req, res) => {
     }
 
     const body_data = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const secret = "QPzP4H4lvI82qBzn6sqbQs6q";
+    const secret = "nssOinzZfTLajrmmZrur0ij7";
     const expected = crypto
       .createHmac("SHA256", secret)
       .update(body_data)
