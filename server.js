@@ -65,7 +65,7 @@ app.post("/payment/checkout", async (req, res) => {
         $push: { appointments: appointment._id },
       });
   
-      console.log({ order });
+     
       res.send(order);
     } catch (error) {
       console.log(error);
@@ -98,8 +98,6 @@ app.post("/payment/payment-verification", async (req, res) => {
       .update(body_data)
       .digest("hex");
 
-    console.log("Expected Signature:", expected);
-    console.log("Received Signature:", razorpay_signature);
 
     if (expected === razorpay_signature) {
       await appointmentModel.findOneAndUpdate(

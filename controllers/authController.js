@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
-import nodemailer from 'nodemailer';
 import appointmentModel from "../models/appointment.model.js";
 import otpGenerator from 'otp-generator';
 // register user controller
@@ -49,7 +48,6 @@ export const registerController = async (req, res) => {
 export const loginUserController = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(400).json({
@@ -155,7 +153,6 @@ export const appointmentStatus = async (req, res) => {
   try {
     const razorpayPaymentId = req.params.razorpayPaymentId; // Adjust the parameter name based on your actual implementation
     // Find the appointment based on the Razorpay payment ID
-    console.log(razorpayPaymentId)
     const result = await appointmentModel.findOne({
       razorpay_payment_id: razorpayPaymentId,
     });
