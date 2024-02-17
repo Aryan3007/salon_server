@@ -13,7 +13,7 @@ export const registerController = async (req, res) => {
     if (existingUser) {
       return res
         .status(409)
-        .json({ error: "User with this email already exists. Please login." });
+        .json({ success:false, message: "User with this email already exists. Please login." });
     }
 
     const salt = await bcrypt.genSalt();
