@@ -25,6 +25,45 @@ export const postServicesController = async(req, res)=>{
     }
 }
 
+export const updateServicesController = async (req, res) => {
+  try {
+      const { id } = req.params; // Assuming the ID is passed in the URL params
+      const { name, included, price } = req.body;
+
+      // Check if the ID is provided
+      if (!id) {
+          return res.status(400).json({
+              success: false,
+              message: "ID parameter is required"
+          });
+      }
+
+      // Find the service by ID and update it
+      const updatedService = await serviceModel.findByIdAndUpdate(id, { name, included, price }, { new: true });
+
+      // Check if the service exists
+      if (!updatedService) {
+          return res.status(404).json({
+              success: false,
+              message: "Service not found"
+          });
+      }
+
+      res.status(200).json({
+          success: true,
+          message: "Service updated",
+          data: updatedService
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({
+          success: false,
+          message: "Server error"
+      });
+  }
+};
+
+
 export const appointmentsController = async (req, res) => {
     try {
         const { name, email, mobile, address, dateTime, price } = req.body;
@@ -64,6 +103,36 @@ export const getServicesController = async (req, res) => {
     } catch (error) {
         console.error(error); // Log the error for debugging purposes
 
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+
+export const deleteServicesController = async (req, res) => {
+    try {
+        const { id } = req.body;
+    
+        // Find the service by ID and delete it
+        const deletedService = await serviceModel.findByIdAndDelete(id);
+
+        // Check if the service exists
+        if (!deletedService) {
+            return res.status(404).json({
+                success: false,
+                message: "Service not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Service deleted",
+            data: deletedService // Optionally, you can send back the deleted service
+        });
+    } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Server error"

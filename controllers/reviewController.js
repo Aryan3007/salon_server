@@ -21,6 +21,44 @@ export const postReviewController = async(req, res)=>{
         })
     }
 }
+export const deleteReviewController = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        // Check if the ID is provided
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "ID parameter is required"
+            });
+        }
+
+        // Find the review by ID and delete it
+        const deletedReview = await reviewModel.findByIdAndDelete(id);
+
+        // Check if the review exists
+        if (!deletedReview) {
+            return res.status(404).json({
+                success: false,
+                message: "Review not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Review deleted",
+            data: deletedReview // Optionally, you can send back the deleted review
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+
 export const getReviewController = async(req, res)=>{
     try {
         const reviews =  await reviewModel.find({})

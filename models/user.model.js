@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     }, 
+    admin: {
+      type: Boolean,
+      default:false
+    }, 
     mobile: {
       type: String,
       required: true,
