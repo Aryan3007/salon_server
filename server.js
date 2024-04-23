@@ -10,6 +10,8 @@ import Razorpay from "razorpay";
 import appointmentModel from "./models/appointment.model.js";
 import crypto from "crypto";
 import userModel from "./models/user.model.js";
+import axios from "axios";
+
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -38,6 +40,35 @@ app.use("/review", reviewRouter);
 app.use("/services", servicesRouter);
 app.use("/auth", authRouter);
 app.use("/status", authRouter);
+app.get('/api/images', async (req, res) => {
+  try {
+    const cloudName = 'dla56tkbp'; // Replace with your Cloudinary cloud name
+    const apiKey = '494523572888789'; // Replace with your Cloudinary API key
+    const apiSecret = 'YPfjnQomZpbATQzbKW38P9kyLlc'; // Replace with your Cloudinary API secret
+
+    // Construct the URL for fetching images from Cloudinary
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image`;
+
+    // Fetch images from Cloudinary with max_results set to 100 (adjust as needed)
+    const response = await axios.get(url, {
+      auth: {
+        username: apiKey,
+        password: apiSecret
+      },
+      params: {
+        max_results: 100 // Adjust this value as needed
+      }
+    });
+
+    // Send the response data back to the client
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching images from Cloudinary:', error.message);
+    res.status(500).json({ error: 'Failed to fetch images from Cloudinary' });
+  }
+});
+
+
 
 app.post("/payment/checkout", async (req, res) => {
     try {
