@@ -11,6 +11,8 @@ import appointmentModel from "./models/appointment.model.js";
 import crypto from "crypto";
 import userModel from "./models/user.model.js";
 import axios from "axios";
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
 
 dotenv.config();
 
@@ -40,10 +42,71 @@ app.use("/review", reviewRouter);
 app.use("/services", servicesRouter);
 app.use("/auth", authRouter);
 app.use("/status", authRouter);
+// app.get('/api/images', async (req, res) => {
+//   try {
+//     const cloudName = 'dla56tkbp'; // Replace with your Cloudinary cloud name
+//     const apiKey = '494523572888789'; // Replace with your Cloudinary API key
+//     const apiSecret = 'YPfjnQomZpbATQzbKW38P9kyLlc'; // Replace with your Cloudinary API secret
+
+//     // Construct the URL for fetching images from Cloudinary
+//     const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image`;
+
+//     // Fetch images from Cloudinary with max_results set to 100 (adjust as needed)
+//     const response = await axios.get(url, {
+//       auth: {
+//         username: apiKey,
+//         password: apiSecret
+//       },
+//       params: {
+//         max_results: 100 // Adjust this value as needed
+//       }
+//     });
+
+//     // Send the response data back to the client
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Error fetching images from Cloudinary:', error.message);
+//     res.status(500).json({ error: 'Failed to fetch images from Cloudinary' });
+//   }
+// });
+
+
+cloudinary.config({
+  cloud_name: 'dla56tkbp', // Replace with your Cloudinary cloud name
+  api_key: '494523572888789',       // Replace with your Cloudinary API key
+  api_secret: 'YPfjnQomZpbATQzbKW38P9kyLlc'  // Replace with your Cloudinary API secret
+});
+
+const storage = multer.memoryStorage(); // Use memory storage
+
+const upload = multer({ storage: storage });
+
+// Endpoint to upload an image to the "makeup" folder
+app.post('/api/upload', upload.single('image'), async (req, res) => {
+  try {
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: 'makeup' },
+      (error, result) => {
+        if (error) {
+          console.error('Error uploading image:', error);
+          return res.status(500).json({ error: 'Failed to upload image' });
+        }
+        res.json({ imageUrl: result.secure_url });
+      }
+    );
+
+    req.file.stream.pipe(result);
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
+// Endpoint to fetch images from the "makeup" folder
 app.get('/api/images', async (req, res) => {
   try {
     const cloudName = 'dla56tkbp'; // Replace with your Cloudinary cloud name
-    const apiKey = '494523572888789'; // Replace with your Cloudinary API key
+    const apiKey = '494523572888789';       // Replace with your Cloudinary API key
     const apiSecret = 'YPfjnQomZpbATQzbKW38P9kyLlc'; // Replace with your Cloudinary API secret
 
     // Construct the URL for fetching images from Cloudinary
@@ -56,7 +119,8 @@ app.get('/api/images', async (req, res) => {
         password: apiSecret
       },
       params: {
-        max_results: 100 // Adjust this value as needed
+        max_results: 100, // Adjust this value as needed
+        prefix: 'makeup/' // Filter images by the "makeup" folder
       }
     });
 
@@ -67,6 +131,11 @@ app.get('/api/images', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch images from Cloudinary' });
   }
 });
+
+
+
+
+
 
 
 
